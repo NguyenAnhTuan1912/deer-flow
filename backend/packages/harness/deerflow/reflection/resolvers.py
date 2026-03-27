@@ -17,7 +17,9 @@ def _build_missing_dependency_hint(module_path: str, err: ImportError) -> str:
     # error is triggered by a transitive dependency (e.g. `google`).
     package_name = MODULE_TO_PACKAGE_HINTS.get(module_root)
     if package_name is None:
-        package_name = MODULE_TO_PACKAGE_HINTS.get(missing_module, missing_module.replace("_", "-"))
+        package_name = MODULE_TO_PACKAGE_HINTS.get(
+            missing_module, missing_module.replace("_", "-")
+        )
 
     return f"Missing dependency '{missing_module}'. Install it with `uv add {package_name}` (or `pip install {package_name}`), then restart DeerFlow."
 
@@ -43,7 +45,9 @@ def resolve_variable[T](
     try:
         module_path, variable_name = variable_path.rsplit(":", 1)
     except ValueError as err:
-        raise ImportError(f"{variable_path} doesn't look like a variable path. Example: parent_package_name.sub_package_name.module_name:variable_name") from err
+        raise ImportError(
+            f"{variable_path} doesn't look like a variable path. Example: parent_package_name.sub_package_name.module_name:variable_name"
+        ) from err
 
     try:
         module = import_module(module_path)
@@ -59,13 +63,21 @@ def resolve_variable[T](
     try:
         variable = getattr(module, variable_name)
     except AttributeError as err:
-        raise ImportError(f"Module {module_path} does not define a {variable_name} attribute/class") from err
+        raise ImportError(
+            f"Module {module_path} does not define a {variable_name} attribute/class"
+        ) from err
 
     # Type validation
     if expected_type is not None:
         if not isinstance(variable, expected_type):
-            type_name = expected_type.__name__ if isinstance(expected_type, type) else " or ".join(t.__name__ for t in expected_type)
-            raise ValueError(f"{variable_path} is not an instance of {type_name}, got {type(variable).__name__}")
+            type_name = (
+                expected_type.__name__
+                if isinstance(expected_type, type)
+                else " or ".join(t.__name__ for t in expected_type)
+            )
+            raise ValueError(
+                f"{variable_path} is not an instance of {type_name}, got {type(variable).__name__}"
+            )
 
     return variable
 

@@ -137,6 +137,13 @@ services:
         read_only: true
         bind:
           create_host_path: true
+      # AWS credentials for Bedrock
+      - type: bind
+        source: ${HOME:?HOME must be set}/.aws
+        target: /root/.aws
+        read_only: true
+        bind:
+          create_host_path: true
     working_dir: /app
     environment:
       - CI=true
@@ -183,6 +190,13 @@ services:
       - type: bind
         source: ${HOME:?HOME must be set}/.codex
         target: /root/.codex
+        read_only: true
+        bind:
+          create_host_path: true
+      # AWS credentials for Bedrock
+      - type: bind
+        source: ${HOME:?HOME must be set}/.aws
+        target: /root/.aws
         read_only: true
         bind:
           create_host_path: true

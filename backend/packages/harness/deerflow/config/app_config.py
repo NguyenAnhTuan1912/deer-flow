@@ -7,7 +7,10 @@ import yaml
 from dotenv import load_dotenv
 from pydantic import BaseModel, ConfigDict, Field
 
-from deerflow.config.checkpointer_config import CheckpointerConfig, load_checkpointer_config_from_dict
+from deerflow.config.checkpointer_config import (
+    CheckpointerConfig,
+    load_checkpointer_config_from_dict,
+)
 from deerflow.config.extensions_config import ExtensionsConfig
 from deerflow.config.guardrails_config import load_guardrails_config_from_dict
 from deerflow.config.memory_config import load_memory_config_from_dict
@@ -19,7 +22,10 @@ from deerflow.config.summarization_config import load_summarization_config_from_
 from deerflow.config.title_config import load_title_config_from_dict
 from deerflow.config.token_usage_config import TokenUsageConfig
 from deerflow.config.tool_config import ToolConfig, ToolGroupConfig
-from deerflow.config.tool_search_config import ToolSearchConfig, load_tool_search_config_from_dict
+from deerflow.config.tool_search_config import (
+    ToolSearchConfig,
+    load_tool_search_config_from_dict,
+)
 
 load_dotenv()
 
@@ -29,17 +35,37 @@ logger = logging.getLogger(__name__)
 class AppConfig(BaseModel):
     """Config for the DeerFlow application"""
 
-    log_level: str = Field(default="info", description="Logging level for deerflow modules (debug/info/warning/error)")
-    token_usage: TokenUsageConfig = Field(default_factory=TokenUsageConfig, description="Token usage tracking configuration")
-    models: list[ModelConfig] = Field(default_factory=list, description="Available models")
+    log_level: str = Field(
+        default="info",
+        description="Logging level for deerflow modules (debug/info/warning/error)",
+    )
+    token_usage: TokenUsageConfig = Field(
+        default_factory=TokenUsageConfig,
+        description="Token usage tracking configuration",
+    )
+    models: list[ModelConfig] = Field(
+        default_factory=list, description="Available models"
+    )
     sandbox: SandboxConfig = Field(description="Sandbox configuration")
     tools: list[ToolConfig] = Field(default_factory=list, description="Available tools")
-    tool_groups: list[ToolGroupConfig] = Field(default_factory=list, description="Available tool groups")
-    skills: SkillsConfig = Field(default_factory=SkillsConfig, description="Skills configuration")
-    extensions: ExtensionsConfig = Field(default_factory=ExtensionsConfig, description="Extensions configuration (MCP servers and skills state)")
-    tool_search: ToolSearchConfig = Field(default_factory=ToolSearchConfig, description="Tool search / deferred loading configuration")
+    tool_groups: list[ToolGroupConfig] = Field(
+        default_factory=list, description="Available tool groups"
+    )
+    skills: SkillsConfig = Field(
+        default_factory=SkillsConfig, description="Skills configuration"
+    )
+    extensions: ExtensionsConfig = Field(
+        default_factory=ExtensionsConfig,
+        description="Extensions configuration (MCP servers and skills state)",
+    )
+    tool_search: ToolSearchConfig = Field(
+        default_factory=ToolSearchConfig,
+        description="Tool search / deferred loading configuration",
+    )
     model_config = ConfigDict(extra="allow", frozen=False)
-    checkpointer: CheckpointerConfig | None = Field(default=None, description="Checkpointer configuration")
+    checkpointer: CheckpointerConfig | None = Field(
+        default=None, description="Checkpointer configuration"
+    )
 
     @classmethod
     def resolve_config_path(cls, config_path: str | None = None) -> Path:
@@ -53,12 +79,16 @@ class AppConfig(BaseModel):
         if config_path:
             path = Path(config_path)
             if not Path.exists(path):
-                raise FileNotFoundError(f"Config file specified by param `config_path` not found at {path}")
+                raise FileNotFoundError(
+                    f"Config file specified by param `config_path` not found at {path}"
+                )
             return path
         elif os.getenv("DEER_FLOW_CONFIG_PATH"):
             path = Path(os.getenv("DEER_FLOW_CONFIG_PATH"))
             if not Path.exists(path):
-                raise FileNotFoundError(f"Config file specified by environment variable `DEER_FLOW_CONFIG_PATH` not found at {path}")
+                raise FileNotFoundError(
+                    f"Config file specified by environment variable `DEER_FLOW_CONFIG_PATH` not found at {path}"
+                )
             return path
         else:
             # Check if the config.yaml is in the current directory
@@ -67,7 +97,9 @@ class AppConfig(BaseModel):
                 # Check if the config.yaml is in the parent directory of CWD
                 path = Path(os.getcwd()).parent / "config.yaml"
                 if not path.exists():
-                    raise FileNotFoundError("`config.yaml` file not found at the current directory nor its parent directory")
+                    raise FileNotFoundError(
+                        "`config.yaml` file not found at the current directory nor its parent directory"
+                    )
             return path
 
     @classmethod
@@ -187,7 +219,9 @@ class AppConfig(BaseModel):
             if config.startswith("$"):
                 env_value = os.getenv(config[1:])
                 if env_value is None:
-                    raise ValueError(f"Environment variable {config[1:]} not found for config value {config}")
+                    raise ValueError(
+                        f"Environment variable {config[1:]} not found for config value {config}"
+                    )
                 return env_value
             return config
         elif isinstance(config, dict):

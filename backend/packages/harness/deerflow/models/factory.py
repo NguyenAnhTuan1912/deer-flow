@@ -8,7 +8,9 @@ from deerflow.reflection import resolve_class
 logger = logging.getLogger(__name__)
 
 
-def create_chat_model(name: str | None = None, thinking_enabled: bool = False, **kwargs) -> BaseChatModel:
+def create_chat_model(
+    name: str | None = None, thinking_enabled: bool = False, **kwargs
+) -> BaseChatModel:
     """Create a chat model instance from the config.
 
     Args:
@@ -40,14 +42,25 @@ def create_chat_model(name: str | None = None, thinking_enabled: bool = False, *
     )
     # Compute effective when_thinking_enabled by merging in the `thinking` shortcut field.
     # The `thinking` shortcut is equivalent to setting when_thinking_enabled["thinking"].
-    has_thinking_settings = (model_config.when_thinking_enabled is not None) or (model_config.thinking is not None)
-    effective_wte: dict = dict(model_config.when_thinking_enabled) if model_config.when_thinking_enabled else {}
+    has_thinking_settings = (model_config.when_thinking_enabled is not None) or (
+        model_config.thinking is not None
+    )
+    effective_wte: dict = (
+        dict(model_config.when_thinking_enabled)
+        if model_config.when_thinking_enabled
+        else {}
+    )
     if model_config.thinking is not None:
-        merged_thinking = {**(effective_wte.get("thinking") or {}), **model_config.thinking}
+        merged_thinking = {
+            **(effective_wte.get("thinking") or {}),
+            **model_config.thinking,
+        }
         effective_wte = {**effective_wte, "thinking": merged_thinking}
     if thinking_enabled and has_thinking_settings:
         if not model_config.supports_thinking:
-            raise ValueError(f"Model {name} does not support thinking. Set `supports_thinking` to true in the `config.yaml` to enable thinking.") from None
+            raise ValueError(
+                f"Model {name} does not support thinking. Set `supports_thinking` to true in the `config.yaml` to enable thinking."
+            ) from None
         if effective_wte:
             model_settings_from_config.update(effective_wte)
     if not thinking_enabled and has_thinking_settings:
@@ -89,7 +102,9 @@ def create_chat_model(name: str | None = None, thinking_enabled: bool = False, *
             )
             existing_callbacks = model_instance.callbacks or []
             model_instance.callbacks = [*existing_callbacks, tracer]
-            logger.debug(f"LangSmith tracing attached to model '{name}' (project='{tracing_config.project}')")
+            logger.debug(
+                f"LangSmith tracing attached to model '{name}' (project='{tracing_config.project}')"
+            )
         except Exception as e:
             logger.warning(f"Failed to attach LangSmith tracing to model '{name}': {e}")
     return model_instance
