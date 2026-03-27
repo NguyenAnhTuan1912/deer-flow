@@ -38,7 +38,7 @@ models:
   # Example: Bedrock Anthropic Claude model
   - name: claude-4-5-sonnet
     display_name: Claude 4.5 Sonnet
-    use: langchain_aws:ChatBedrockConverse
+    use: deerflow.models.bedrock_provider:BedrockChatModel
     model: global.anthropic.claude-sonnet-4-5-20250929-v1:0
     credentials_profile_name: ecv
     region_name: ap-southeast-1

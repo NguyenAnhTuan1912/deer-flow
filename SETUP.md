@@ -11,13 +11,13 @@
 
 ### Step 1: Create app config
 
-Chạy lệnh sau để tạo các file config từ template:
+Copy các file config từ template:
 
 ```bash
-make config
+cp config.example.yaml config.yaml
+cp .env.example .env
+cp frontend/.env.example frontend/.env
 ```
-
-Lệnh này sẽ tạo `config.yaml`, `.env`, và `frontend/.env` từ các file example tương ứng.
 
 ### Step 2: Configure model
 
@@ -39,11 +39,12 @@ models:
 ### Step 3: Start app
 
 ```bash
-# Pull sandbox image (chỉ cần chạy 1 lần)
-make docker-init
+# Pull sandbox image (chỉ cần chạy 1 lần, bỏ qua nếu dùng local sandbox mode)
+docker pull enterprise-public-cn-beijing.cr.volces.com/vefaas-public/all-in-one-sandbox:latest
 
 # Start services
-make docker-start
+export DEER_FLOW_ROOT=$(pwd)
+docker compose -f docker/docker-compose-dev.yaml up --build -d --remove-orphans
 ```
 
 Truy cập: http://localhost:2026
